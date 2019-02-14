@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  SlackAgipBot:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: SlackAgipBot
+      Description: 'A serverlass function to get the agip menù'
+      Handler: index.handler
+      MemorySize: 128
+      Role: 'arn:aws:iam::${AWS::AccountId}:role/service-role/SlackAgipBotRole'
+      Runtime: nodejs6.10
+      Timeout: 15

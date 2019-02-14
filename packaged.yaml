@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  SlackAgipBot:
+    Properties:
+      CodeUri: s3://slackagipbot-bucket/27c8db344e6b44e61dc9f0d6544fb21a
+      Description: "A serverlass function to get the agip men\xF9"
+      FunctionName: SlackAgipBot
+      Handler: index.handler
+      MemorySize: 128
+      Role: arn:aws:iam::934289703868:role/service-role/SlackAgipBotRole
+      Runtime: nodejs6.10
+      Timeout: 15
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

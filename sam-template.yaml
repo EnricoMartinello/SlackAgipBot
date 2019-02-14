@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: AgipBot
+
+Resources:
+  SlackAgipBotFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: SlackAgipBot
+      Description: 'A serverlass function to get the agip menù'
+      Handler: index.handler
+      CodeUri: s3://slackagipbot-bucket/27c8db344e6b44e61dc9f0d6544fb21a
+      Runtime: nodejs6.10
+      MemorySize: 128
+      Timeout: 15
+      Role: !GetAtt LambdaRole.Arn
+      Environment:
+        Variables:
+          TEXT_EVENT: ':ajeep:'
+          FB_CLIENT_SECRET: <facebook_client_secret>
+          FB_CLIENT_ID: <facebook_client_id>
+          FB_PAGE_ID: '496880927024165'
+          SLACK_TOKEN: <slack_token>
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewaySlackAgipBot
+            Path: /menu
+            Method: POST
+
+  ApiGatewaySlackAgipBot:
+    Type: AWS::Serverless::Api
+    Properties:
+        StageName: Prod
+        DefinitionBody:
+          swagger: 2.0
+          info:
+            title: SlackAgipBotApi
+          paths:
+            /menu:
+              post:
+                x-amazon-apigateway-integration:
+                  httpMethod: POST
+                  type: aws_proxy
+                  uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:SlackAgipBot/invocations
+                responses: {}
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: SlackAgipBot
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies: 
+        - PolicyName: "root"
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              - Effect: "Allow"
+                Action: 
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - "arn:aws:logs:*:*:*"

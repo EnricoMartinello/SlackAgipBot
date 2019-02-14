@@ -1,0 +1,10 @@
+{
+    "DeploymentMethod": "lambda",
+    "Functions": {
+        "SlackAgipBot": {
+            "PhysicalId": {
+                "eu-west-1": "SlackAgipBot"
+            }
+        }
+    }
+}
